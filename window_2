@@ -1,0 +1,55 @@
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPlainTextEdit, QPushButton, QFileDialog
+from PyQt6.QtCore import Qt
+
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QPushButton, QFileDialog, QMessageBox
+
+
+class Window2(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Редактирование текстового файла")
+        self.setGeometry(100, 100, 400, 300)
+
+        layout = QVBoxLayout()
+
+        self.text_edit = QTextEdit()
+        layout.addWidget(self.text_edit)
+
+        self.open_button = QPushButton("Открыть файл")
+        self.open_button.clicked.connect(self.open_file)
+        layout.addWidget(self.open_button)
+
+        self.save_button = QPushButton("Сохранить файл")
+        self.save_button.clicked.connect(self.save_file)
+        layout.addWidget(self.save_button)
+
+        self.setLayout(layout)
+
+    def open_file(self):
+        file_name, _ = QFileDialog.getOpenFileName(
+            self, "Открыть файл", "", "Text Files (*.txt);;All Files (*)")
+
+        if file_name:
+            try:
+                with open(file_name, 'r') as file:
+                    content = file.read()
+                    self.text_edit.setText(content)
+            except Exception as e:
+                QMessageBox.critical(self, "Ошибка",
+                                     f"Не удалось открыть файл: {str(e)}")
+
+    def save_file(self):
+        file_name, _ = QFileDialog.getSaveFileName(
+            self, "Сохранить файл", "", "Text Files (*.txt);;All Files (*)")
+
+        if file_name:
+            try:
+                with open(file_name, 'w') as file:
+                    content = self.text_edit.toPlainText()
+                    file.write(content)
+                QMessageBox.information(self, "Успех",
+                                        "Файл успешно сохранен!")
+            except Exception as e:
+                QMessageBox.critical(self, "Ошибка",
+                                     f"Не удалось сохранить файл: {str(e)}")

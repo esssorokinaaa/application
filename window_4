@@ -1,0 +1,64 @@
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QMessageBox
+
+
+class Window4(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Запись данных из формы в файл")
+        self.setGeometry(100, 100, 400, 300)
+
+        layout = QVBoxLayout()
+
+        self.label1 = QLabel("Поле 1 (номер):")
+        layout.addWidget(self.label1)
+        self.field1 = QLineEdit()
+        layout.addWidget(self.field1)
+
+        self.label2 = QLabel("Поле 2 (ключ):")
+        layout.addWidget(self.label2)
+        self.field2 = QLineEdit()
+        layout.addWidget(self.field2)
+
+        self.label3 = QLabel("Поле 3 (значение):")
+        layout.addWidget(self.label3)
+        self.field3 = QLineEdit()
+        layout.addWidget(self.field3)
+
+        self.label4 = QLabel("Поле 4:")
+        layout.addWidget(self.label4)
+        self.field4 = QLineEdit()
+        layout.addWidget(self.field4)
+
+        self.label5 = QLabel("Поле 5:")
+        layout.addWidget(self.label5)
+        self.field5 = QLineEdit()
+        layout.addWidget(self.field5)
+
+        self.save_button = QPushButton("Сохранить данные в файл")
+        self.save_button.clicked.connect(self.save_data)
+        layout.addWidget(self.save_button)
+
+        self.setLayout(layout)
+
+    def save_data(self):
+        file_name, _ = QFileDialog.getSaveFileName(
+            self, "Сохранить файл", "", "Text Files (*.txt);;All Files (*)")
+        if file_name:
+            try:
+                with open(file_name,
+                          'a') as file:  # Открываем файл для добавления данных
+                    number = self.field1.text()
+                    key = self.field2.text()
+                    value = self.field3.text()
+                    additional_data1 = self.field4.text()
+                    additional_data2 = self.field5.text()
+
+                    # Форматируем строку для записи
+                    data_line = f"{number}, {key}: {value}, {additional_data1}, {additional_data2}n"
+                    file.write(data_line)
+                QMessageBox.information(self, "Успех",
+                                        "Данные успешно сохранены!")
+            except Exception as e:
+                QMessageBox.critical(self, "Ошибка",
+                                     f"Не удалось сохранить данные: {str(e)}")

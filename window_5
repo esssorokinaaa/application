@@ -1,0 +1,46 @@
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFileDialog, QListWidget, QMessageBox
+
+
+class Window5(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Чтение списка из файла")
+        self.setGeometry(100, 100, 400, 300)
+
+        layout = QVBoxLayout()
+
+        self.list_widget = QListWidget()
+        layout.addWidget(self.list_widget)
+
+        self.load_button = QPushButton("Загрузить список из файла")
+        self.load_button.clicked.connect(self.load_data)
+        layout.addWidget(self.load_button)
+
+        self.setLayout(layout)
+
+    def load_data(self):
+        file_name, _ = QFileDialog.getOpenFileName(
+            self, "Открыть файл", "", "Text Files (*.txt);;All Files (*)")
+
+        if file_name:
+            try:
+                with open(file_name, 'r') as file:
+                    lines = file.readlines()
+                    self.list_widget.clear()
+
+                    for line in lines:
+                        line = line.strip(
+                        )  # Убираем лишние пробелы и переносы строк
+                        if line:  # Если строка не пустая
+                            elements = line.split(', ')
+                            if len(elements) >= 2:
+                                item_display = f"Поле: {elements[0]} ~ Значение: {elements[1]}"
+                                self.list_widget.addItem(item_display)
+                            else:
+                                QMessageBox.warning(
+                                    self, "Предупреждение",
+                                    "Некорректный формат строки.")
+            except Exception as e:
+                QMessageBox.critical(self, "Ошибка",
+                                     f"Не удалось загрузить данные: {str(e)}")
